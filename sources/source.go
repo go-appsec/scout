@@ -4,6 +4,7 @@ import (
 	"context"
 	"iter"
 	"net/http"
+	"sync"
 
 	"github.com/go-analyze/bulk"
 )
@@ -33,19 +34,27 @@ type Source struct {
 	Yields ResultType
 
 	// Run executes the source query and yields results.
-	Run func(ctx context.Context, domain string, client *http.Client) iter.Seq2[Result, error]
+	// The apiKey parameter is optional and used by sources that support authentication.
+	Run func(ctx context.Context, domain string, client *http.Client, apiKey string) iter.Seq2[Result, error]
 }
 
-// All registered sources (populated by init() in each source file)
-var registry = make(map[string]Source) // TODO - make thread safe
+// Registry state protected by RWMutex for concurrent access.
+var (
+	registry   = make(map[string]Source)
+	registryMu sync.RWMutex
+)
 
 // Register adds a source to the global registry.
 func Register(s Source) {
+	registryMu.Lock()
+	defer registryMu.Unlock()
 	registry[s.Name] = s
 }
 
 // ByName returns a source by name, or nil if not found.
 func ByName(name string) *Source {
+	registryMu.RLock()
+	defer registryMu.RUnlock()
 	if s, ok := registry[name]; ok {
 		return &s
 	}
@@ -54,11 +63,15 @@ func ByName(name string) *Source {
 
 // List returns all registered sources as a slice.
 func List() []Source {
+	registryMu.RLock()
+	defer registryMu.RUnlock()
 	return bulk.MapValuesSlice(registry)
 }
 
 // Filter returns sources that yield at least one of the specified types.
 func Filter(want ResultType) []Source {
+	registryMu.RLock()
+	defer registryMu.RUnlock()
 	result := make([]Source, 0, len(registry))
 	for _, s := range registry {
 		if s.Yields&want != 0 {
@@ -70,5 +83,7 @@ func Filter(want ResultType) []Source {
 
 // Names returns the names of all registered sources.
 func Names() []string {
+	registryMu.RLock()
+	defer registryMu.RUnlock()
 	return bulk.MapKeysSlice(registry)
 }
