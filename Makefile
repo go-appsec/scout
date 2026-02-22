@@ -2,7 +2,7 @@ export GO111MODULE = on
 
 LDFLAGS = -ldflags "-s -w"
 CMDS = $(notdir $(wildcard cmd/*))
-PLATFORMS ?= linux-amd64 linux-arm64 darwin-amd64 darwin-arm64 windows-amd64
+PLATFORMS ?= linux-amd64 linux-arm64 darwin-amd64 darwin-arm64 windows-amd64 windows-arm64
 
 .PHONY: build build-cross test test-all test-cover lint clean $(CMDS)
 
