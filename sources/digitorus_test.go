@@ -2,6 +2,7 @@ package sources
 
 import (
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -22,10 +23,14 @@ func TestDigitorus(t *testing.T) {
 		if testing.Short() {
 			t.Skip("skipping integration test")
 		}
+		apiKey := os.Getenv("DIGITORUS_API_KEY")
+		if apiKey == "" {
+			t.Skip("DIGITORUS_API_KEY not set")
+		}
 
 		ctx := t.Context()
 		client := &http.Client{Timeout: 30 * time.Second}
-		subdomains, _, errors := collectResults(Digitorus.Run(ctx, client, "github.com", ""))
+		subdomains, _, errors := collectResults(Digitorus.Run(ctx, client, "github.com", apiKey))
 
 		if len(errors) > 0 {
 			t.Logf("errors: %v", errors)

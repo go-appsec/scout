@@ -2,6 +2,7 @@ package sources
 
 import (
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -22,10 +23,14 @@ func TestReconeer(t *testing.T) {
 		if testing.Short() {
 			t.Skip("skipping integration test")
 		}
+		apiKey := os.Getenv("RECONEER_API_KEY")
+		if apiKey == "" {
+			t.Skip("RECONEER_API_KEY not set")
+		}
 
 		ctx := t.Context()
 		client := &http.Client{Timeout: 30 * time.Second}
-		subdomains, _, errors := collectResults(Reconeer.Run(ctx, client, "github.com", ""))
+		subdomains, _, errors := collectResults(Reconeer.Run(ctx, client, "github.com", apiKey))
 
 		if len(errors) > 0 {
 			t.Logf("errors: %v", errors)

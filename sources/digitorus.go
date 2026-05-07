@@ -14,10 +14,12 @@ func init() {
 }
 
 // Digitorus queries the CertificateDetails website for subdomains.
+// API key required.
 var Digitorus = Source{
-	Name:   "digitorus",
-	Yields: Subdomain,
-	Run:    runDigitorus,
+	Name:         "digitorus",
+	Yields:       Subdomain,
+	AuthRequired: true,
+	Run:          runDigitorus,
 }
 
 func runDigitorus(ctx context.Context, client *http.Client, domain string, _ string) iter.Seq2[Result, error] {

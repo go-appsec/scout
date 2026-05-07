@@ -13,11 +13,12 @@ func init() {
 }
 
 // Reconeer queries the Reconeer API for subdomains.
-// Works without API key; key improves rate limits.
+// API key required.
 var Reconeer = Source{
-	Name:   "reconeer",
-	Yields: Subdomain,
-	Run:    runReconeer,
+	Name:         "reconeer",
+	Yields:       Subdomain,
+	AuthRequired: true,
+	Run:          runReconeer,
 }
 
 func runReconeer(ctx context.Context, client *http.Client, domain string, apiKey string) iter.Seq2[Result, error] {

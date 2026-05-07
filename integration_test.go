@@ -33,23 +33,23 @@ func TestIntegrationQuery(t *testing.T) {
 
 	// All results should have a source name
 	for _, r := range results {
-		assert.NotEmpty(t, r.Source)
+		assert.NotEmpty(t, r.Source, "result missing source: %+v", r)
 	}
 
 	// All results should have a valid type
 	for _, r := range results {
-		assert.True(t, r.Type == sources.Subdomain || r.Type == sources.URL)
+		assert.True(t, r.Type == sources.Subdomain || r.Type == sources.URL, "invalid type from %s: %+v", r.Source, r)
 	}
 
 	// All results should have a non-empty value
 	for _, r := range results {
-		assert.NotEmpty(t, r.Value)
+		assert.NotEmpty(t, r.Value, "empty value from %s: %+v", r.Source, r)
 	}
 
 	// Subdomains should contain the target domain
 	for _, r := range results {
 		if r.Type == sources.Subdomain {
-			assert.Contains(t, r.Value, domain)
+			assert.Contains(t, r.Value, domain, "subdomain from %s does not contain domain: %q", r.Source, r.Value)
 		}
 	}
 
@@ -58,7 +58,7 @@ func TestIntegrationQuery(t *testing.T) {
 		if r.Type == sources.URL {
 			hasHTTP := strings.HasPrefix(r.Value, "http://")
 			hasHTTPS := strings.HasPrefix(r.Value, "https://")
-			assert.True(t, hasHTTP || hasHTTPS)
+			assert.True(t, hasHTTP || hasHTTPS, "invalid URL from %s: %q", r.Source, r.Value)
 		}
 	}
 }
