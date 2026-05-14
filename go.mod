@@ -3,7 +3,7 @@ module github.com/go-appsec/scout
 go 1.24.0
 
 require (
-	github.com/go-analyze/bulk v0.1.3
+	github.com/go-analyze/bulk v0.1.4
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/time v0.14.0
 )
