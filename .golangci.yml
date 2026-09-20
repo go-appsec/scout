@@ -5,6 +5,7 @@ linters:
     - asasalint
     - asciicheck
     - bidichk
+    - contextcheck
     - decorder
     - durationcheck
     - errcheck
@@ -22,6 +23,7 @@ linters:
     - mirror
     - misspell
     - musttag
+    - noctx
     - perfsprint
     - prealloc
     - reassign
@@ -32,6 +34,11 @@ linters:
     - unconvert
     - wastedassign
     - whitespace
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - goconst
   settings:
     goconst:
       min-len: 4
