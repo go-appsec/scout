@@ -127,7 +127,8 @@ func TestQuery(t *testing.T) {
 		}, nil)
 
 		count := 0
-		for range Query(ctx, "example.com", WithSources([]sources.Source{src}), WithParallelism(1)) {
+		for _, err := range Query(ctx, "example.com", WithSources([]sources.Source{src}), WithParallelism(1)) {
+			require.NoError(t, err)
 			count++
 			if count == 1 {
 				cancel()
@@ -179,7 +180,8 @@ func TestQuery(t *testing.T) {
 		ctx := t.Context()
 
 		var count int
-		for range Query(ctx, "example.com", WithSources([]sources.Source{}), WithParallelism(1)) {
+		for _, err := range Query(ctx, "example.com", WithSources([]sources.Source{}), WithParallelism(1)) {
+			require.NoError(t, err)
 			count++
 		}
 
